@@ -10,14 +10,6 @@ export interface NoteItem {
   updatedAt?: string | Date;
 }
 
-export interface ShortcutItem {
-  id: string;
-  title: string;
-  url: string;
-  icon: string;
-  orderIndex: number;
-}
-
 export interface UserSettingsItem {
   theme: "midnight" | "obsidian" | "aurora" | "dusk" | "light";
   zenPreference: "black" | "white";
@@ -27,6 +19,21 @@ export interface UserSettingsItem {
   showClock: boolean;
   showShortcuts: boolean;
   clockFormat: "12h" | "24h";
+  clockStyle: "minimal" | "glow" | "cyber" | "serif" | "clean";
+  showSeconds: boolean;
+  birthDate: string;
+  noteFont: "sans" | "mono" | "serif";
+  noteFontSize: "sm" | "base" | "lg" | "xl";
+  noteColor: "default" | "amber" | "emerald" | "sky" | "purple" | "rose";
+  calendarView: "days" | "year" | "weeks";
+}
+
+export interface ShortcutItem {
+  id: string;
+  title: string;
+  url: string;
+  icon: string;
+  orderIndex: number;
 }
 
 interface AppState {
@@ -38,9 +45,12 @@ interface AppState {
   zenTheme: "black" | "white";
   syncStatus: "saved" | "syncing" | "offline" | "error";
   isSettingsOpen: boolean;
+  isFullscreenClock: boolean;
 
   // Actions
   setIsSettingsOpen: (open: boolean) => void;
+  setIsFullscreenClock: (fullscreen: boolean) => void;
+  toggleFullscreenClock: () => void;
   toggleZenMode: (force?: boolean) => void;
   toggleZenTheme: () => void;
   setZenTheme: (theme: "black" | "white") => void;
@@ -74,7 +84,7 @@ export const useAppStore = create<AppState>()(
         {
           id: "welcome-note",
           title: "Daily Focus & Tasks",
-          content: `### Welcome to your Firefox Homepage ✨\n\n- [ ] Plan today's primary focus\n- [ ] Review pending pull requests\n- [ ] Take a 10-minute mindfulness break\n\n> Press 'Z' or click the Zen button to enter distraction-free pure Black/White mode.`,
+          content: `### Welcome to your Firefox Homepage ✨\n\n- [ ] Plan today's primary focus\n- [ ] Review pending pull requests\n- [ ] Take a 10-minute mindfulness break\n\n> Press 'Z' or click the Zen button to enter distraction-free pure Black/White mode.\n> Double-click the clock to enter immersive fullscreen clock mode!`,
           isPinned: true,
           updatedAt: new Date().toISOString(),
         },
@@ -83,10 +93,6 @@ export const useAppStore = create<AppState>()(
       shortcuts: [
         { id: "1", title: "GitHub", url: "https://github.com", icon: "github", orderIndex: 0 },
         { id: "2", title: "YouTube", url: "https://youtube.com", icon: "youtube", orderIndex: 1 },
-        { id: "3", title: "Reddit", url: "https://reddit.com", icon: "globe", orderIndex: 2 },
-        { id: "4", title: "Gmail", url: "https://mail.google.com", icon: "mail", orderIndex: 3 },
-        { id: "5", title: "ChatGPT", url: "https://chatgpt.com", icon: "bot", orderIndex: 4 },
-        { id: "6", title: "Vercel", url: "https://vercel.com", icon: "triangle", orderIndex: 5 },
       ],
       settings: {
         theme: "midnight",
@@ -95,15 +101,28 @@ export const useAppStore = create<AppState>()(
         wallpaper: "aurora",
         customBgUrl: "",
         showClock: true,
-        showShortcuts: true,
+        showShortcuts: false,
         clockFormat: "24h",
+        clockStyle: "minimal",
+        showSeconds: false,
+        birthDate: "2003-11-15T17:05:00",
+        noteFont: "sans",
+        noteFontSize: "base",
+        noteColor: "default",
+        calendarView: "days",
       },
       isZenMode: false,
       zenTheme: "black",
       syncStatus: "saved",
       isSettingsOpen: false,
+      isFullscreenClock: false,
 
       setIsSettingsOpen: (open) => set({ isSettingsOpen: open }),
+
+      setIsFullscreenClock: (fullscreen) => set({ isFullscreenClock: fullscreen }),
+
+      toggleFullscreenClock: () =>
+        set((state) => ({ isFullscreenClock: !state.isFullscreenClock })),
 
       toggleZenMode: (force) =>
         set((state) => ({
@@ -120,7 +139,6 @@ export const useAppStore = create<AppState>()(
       setActiveNoteId: (id) => set({ activeNoteId: id }),
 
       updateNoteContent: (id, content) => {
-        // Optimistic local state update
         set((state) => ({
           syncStatus: "syncing",
           notes: state.notes.map((n) =>
@@ -128,7 +146,6 @@ export const useAppStore = create<AppState>()(
           ),
         }));
 
-        // Debounce backend sync
         if (debounceTimers[id]) clearTimeout(debounceTimers[id]);
         debounceTimers[id] = setTimeout(async () => {
           try {
@@ -319,9 +336,8 @@ export const useAppStore = create<AppState>()(
 
       fetchInitialData: async () => {
         try {
-          const [notesRes, scRes, setRes] = await Promise.all([
+          const [notesRes, setRes] = await Promise.all([
             fetch("/api/notes"),
-            fetch("/api/shortcuts"),
             fetch("/api/settings"),
           ]);
 
@@ -334,13 +350,6 @@ export const useAppStore = create<AppState>()(
                   ? state.activeNoteId
                   : notesData[0].id,
               }));
-            }
-          }
-
-          if (scRes.ok) {
-            const scData = await scRes.json();
-            if (Array.isArray(scData) && scData.length > 0) {
-              set({ shortcuts: scData });
             }
           }
 
@@ -365,7 +374,6 @@ export const useAppStore = create<AppState>()(
       partialize: (state) => ({
         notes: state.notes,
         activeNoteId: state.activeNoteId,
-        shortcuts: state.shortcuts,
         settings: state.settings,
         zenTheme: state.zenTheme,
       }),

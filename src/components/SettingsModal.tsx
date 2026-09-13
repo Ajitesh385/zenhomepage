@@ -5,18 +5,17 @@ import { useAppStore, UserSettingsItem } from "@/lib/store";
 import {
   X,
   Palette,
-  Eye,
   Clock,
-  Search,
   Check,
   Moon,
   Sun,
-  LayoutGrid,
+  Calendar,
+  Type,
   Sparkles,
 } from "lucide-react";
 
 export default function SettingsModal() {
-  const { isSettingsOpen, setIsSettingsOpen, settings, updateSettings, zenTheme, setZenTheme } =
+  const { isSettingsOpen, setIsSettingsOpen, settings, updateSettings, setZenTheme } =
     useAppStore();
 
   if (!isSettingsOpen) return null;
@@ -54,6 +53,14 @@ export default function SettingsModal() {
     },
   ];
 
+  const clockStyles: { id: UserSettingsItem["clockStyle"]; name: string }[] = [
+    { id: "minimal", name: "Minimal Mono" },
+    { id: "glow", name: "Cyan Glow" },
+    { id: "cyber", name: "Cyber Matrix" },
+    { id: "serif", name: "Editorial Serif" },
+    { id: "clean", name: "Modern Sans" },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
       <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-3xl glass-panel p-6 md:p-8 shadow-2xl border border-white/15">
@@ -64,8 +71,8 @@ export default function SettingsModal() {
               <Palette className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Homescreen Customization</h2>
-              <p className="text-xs text-neutral-400">Personalize your Firefox start page</p>
+              <h2 className="text-lg font-bold text-white">Homescreen Settings</h2>
+              <p className="text-xs text-neutral-400">Customize clock, calendar, notepad & themes</p>
             </div>
           </div>
           <button
@@ -77,10 +84,99 @@ export default function SettingsModal() {
         </div>
 
         <div className="space-y-6 text-sm">
-          {/* Theme selection */}
+          {/* Clock Customization */}
           <div>
+            <label className="flex items-center gap-2 text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-3">
+              <Clock className="w-3.5 h-3.5 text-sky-400" />
+              <span>Centerpiece Clock Customization</span>
+            </label>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
+              {clockStyles.map((cs) => (
+                <button
+                  key={cs.id}
+                  onClick={() => updateSettings({ clockStyle: cs.id })}
+                  className={`p-2.5 rounded-xl border text-xs font-medium text-left cursor-pointer transition-colors ${
+                    settings.clockStyle === cs.id
+                      ? "bg-sky-500/20 border-sky-400 text-white font-semibold"
+                      : "bg-white/[0.02] border-white/10 text-neutral-300 hover:bg-white/5"
+                  }`}
+                >
+                  {cs.name}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* 24h vs 12h */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between">
+                <span className="text-xs text-neutral-300">24-Hour Clock</span>
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateSettings({
+                      clockFormat: settings.clockFormat === "24h" ? "12h" : "24h",
+                    })
+                  }
+                  className={`w-10 h-5 rounded-full transition-colors relative cursor-pointer ${
+                    settings.clockFormat === "24h" ? "bg-sky-500" : "bg-neutral-800"
+                  }`}
+                >
+                  <span
+                    className={`block w-3.5 h-3.5 rounded-full bg-white transition-transform ${
+                      settings.clockFormat === "24h" ? "translate-x-5" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Show Seconds */}
+              <div className="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between">
+                <span className="text-xs text-neutral-300">Show Seconds</span>
+                <button
+                  type="button"
+                  onClick={() => updateSettings({ showSeconds: !settings.showSeconds })}
+                  className={`w-10 h-5 rounded-full transition-colors relative cursor-pointer ${
+                    settings.showSeconds ? "bg-sky-500" : "bg-neutral-800"
+                  }`}
+                >
+                  <span
+                    className={`block w-3.5 h-3.5 rounded-full bg-white transition-transform ${
+                      settings.showSeconds ? "translate-x-5" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Life Calendar Customization */}
+          <div className="pt-2 border-t border-white/10">
+            <label className="flex items-center gap-2 text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-2">
+              <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Life Calendar & Birth Details</span>
+            </label>
+            <p className="text-xs text-neutral-400 mb-3">
+              Configure your exact birth date and time for the rectangles grid and countdown.
+            </p>
+            <div className="flex items-center gap-2">
+              <input
+                type="text"
+                value={settings.birthDate}
+                onChange={(e) => updateSettings({ birthDate: e.target.value })}
+                className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white font-mono text-xs focus:outline-none focus:border-sky-400/50"
+                placeholder="2003-11-15T17:05:00"
+              />
+            </div>
+            <span className="text-[11px] text-neutral-500 mt-1 block">
+              Configured: 15th November 2003, 5:05 PM
+            </span>
+          </div>
+
+          {/* Atmosphere & Themes */}
+          <div className="pt-2 border-t border-white/10">
             <label className="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-3">
-              Atmosphere & Theme
+              Background Atmosphere
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               {themes.map((t) => {
@@ -110,14 +206,11 @@ export default function SettingsModal() {
             </div>
           </div>
 
-          {/* Zen Mode Preference (Black vs White) */}
+          {/* Zen Mode Default */}
           <div className="pt-2 border-t border-white/10">
             <label className="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-2">
-              Default Zen Mode Polarity
+              Zen Mode Default
             </label>
-            <p className="text-xs text-neutral-400 mb-3">
-              Choose the default appearance when pressing &apos;Z&apos; or launching Zen mode.
-            </p>
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => {
@@ -149,102 +242,6 @@ export default function SettingsModal() {
                 <span>Paper White (#FAFAFA)</span>
               </button>
             </div>
-          </div>
-
-          {/* Clock format & Widgets */}
-          <div className="pt-2 border-t border-white/10">
-            <label className="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-3">
-              Widgets & Layout
-            </label>
-            <div className="space-y-3">
-              {/* Show Clock */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/10">
-                <div className="flex items-center gap-2.5">
-                  <Clock className="w-4 h-4 text-neutral-400" />
-                  <span className="text-xs text-neutral-200">Show Clock & Greeting</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => updateSettings({ showClock: !settings.showClock })}
-                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                    settings.showClock ? "bg-sky-500" : "bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                      settings.showClock ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Clock Format */}
-              {settings.showClock && (
-                <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/10">
-                  <span className="text-xs text-neutral-200">Time Format</span>
-                  <div className="flex items-center gap-1.5 bg-black/40 p-1 rounded-lg border border-white/10">
-                    <button
-                      onClick={() => updateSettings({ clockFormat: "12h" })}
-                      className={`px-3 py-1 rounded text-xs font-medium cursor-pointer ${
-                        settings.clockFormat === "12h"
-                          ? "bg-sky-500 text-white"
-                          : "text-neutral-400 hover:text-white"
-                      }`}
-                    >
-                      12 Hour
-                    </button>
-                    <button
-                      onClick={() => updateSettings({ clockFormat: "24h" })}
-                      className={`px-3 py-1 rounded text-xs font-medium cursor-pointer ${
-                        settings.clockFormat === "24h"
-                          ? "bg-sky-500 text-white"
-                          : "text-neutral-400 hover:text-white"
-                      }`}
-                    >
-                      24 Hour
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Show Speed Dial */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/10">
-                <div className="flex items-center gap-2.5">
-                  <LayoutGrid className="w-4 h-4 text-neutral-400" />
-                  <span className="text-xs text-neutral-200">Show Quick Launch Shortcuts</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => updateSettings({ showShortcuts: !settings.showShortcuts })}
-                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${
-                    settings.showShortcuts ? "bg-sky-500" : "bg-neutral-800"
-                  }`}
-                >
-                  <span
-                    className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                      settings.showShortcuts ? "translate-x-6" : "translate-x-1"
-                    }`}
-                  />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Custom Wallpaper URL */}
-          <div className="pt-2 border-t border-white/10">
-            <label className="block text-xs uppercase tracking-wider text-neutral-400 font-semibold mb-1">
-              Custom Wallpaper URL (Optional)
-            </label>
-            <p className="text-xs text-neutral-400 mb-2">
-              Paste a direct image link or Unsplash wallpaper URL to use as your custom background.
-            </p>
-            <input
-              type="text"
-              placeholder="https://images.unsplash.com/..."
-              value={settings.customBgUrl}
-              onChange={(e) => updateSettings({ customBgUrl: e.target.value })}
-              className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 text-xs focus:outline-none focus:border-sky-400/50"
-            />
           </div>
         </div>
 

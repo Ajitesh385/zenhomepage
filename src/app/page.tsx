@@ -3,14 +3,14 @@
 import React, { useEffect, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import Header from "@/components/Header";
-import SearchBar from "@/components/SearchBar";
-import SpeedDial from "@/components/SpeedDial";
+import Clock from "@/components/Clock";
+import LifeCalendar from "@/components/LifeCalendar";
 import Notepad from "@/components/Notepad";
 import ZenMode from "@/components/ZenMode";
 import SettingsModal from "@/components/SettingsModal";
 
 export default function Home() {
-  const { settings, toggleZenMode, fetchInitialData, isZenMode } = useAppStore();
+  const { settings, toggleZenMode, fetchInitialData } = useAppStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -46,7 +46,6 @@ export default function Home() {
     );
   }
 
-  // Determine ambient background based on theme
   const getThemeBackgroundClass = () => {
     switch (settings.theme) {
       case "obsidian":
@@ -77,24 +76,30 @@ export default function Home() {
           : undefined
       }
     >
-      {/* Decorative ambient lighting orbs */}
+      {/* Subtle ambient lighting */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden z-0">
-        <div className="absolute -top-32 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 -right-24 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute -top-32 left-1/3 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl animate-pulse-subtle" />
+        <div className="absolute top-1/2 -right-24 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl animate-pulse-subtle" />
       </div>
 
-      {/* Main Homescreen Interface */}
-      <div className="relative z-10 flex flex-col flex-1 pb-8">
+      {/* Main Container */}
+      <div className="relative z-10 flex flex-col flex-1 pb-10">
         <Header />
-        <SearchBar />
-        <SpeedDial />
+
+        {/* Centerpiece 1: The Grand Clock (Double-click for Fullscreen) */}
+        <Clock />
+
+        {/* Centerpiece 2: Life in Rectangles & Birthday Countdown */}
+        <LifeCalendar />
+
+        {/* Centerpiece 3: Fully Customizable Notepad */}
         <Notepad />
       </div>
 
-      {/* Zen Mode Sanctuary Overlay */}
+      {/* Fullscreen Zen Mode Overlay */}
       <ZenMode />
 
-      {/* Customization Settings Modal */}
+      {/* Settings Modal */}
       <SettingsModal />
     </main>
   );

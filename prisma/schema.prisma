@@ -34,7 +34,14 @@ model UserSettings {
   wallpaper      String   @default("aurora")   // aurora | gradient | abstract | clean | custom
   customBgUrl    String   @default("")
   showClock      Boolean  @default(true)
-  showShortcuts  Boolean  @default(true)
+  showShortcuts  Boolean  @default(false)
   clockFormat    String   @default("24h")      // 12h | 24h
+  clockStyle     String   @default("minimal")  // minimal | glow | cyber | serif
+  showSeconds    Boolean  @default(false)
+  birthDate      String   @default("2003-11-15T17:05:00")
+  noteFont       String   @default("sans")     // sans | mono | serif
+  noteFontSize   String   @default("base")     // sm | base | lg | xl
+  noteColor      String   @default("default")  // default | amber | emerald | sky | purple | rose
+  calendarView   String   @default("days")     // days | year | weeks
   updatedAt      DateTime @updatedAt
 }
