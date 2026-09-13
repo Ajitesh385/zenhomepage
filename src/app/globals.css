@@ -1,26 +1,121 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  /* Custom thin sleek scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Glassmorphism utilities */
+.glass-panel {
+  background: rgba(18, 22, 34, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Animated Ambient Backdrops */
+.bg-mesh-aurora {
+  background-color: #080b14;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(168, 85, 247, 0.18) 0px, transparent 50%),
+    radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(236, 72, 153, 0.1) 0px, transparent 50%);
+}
+
+.bg-mesh-obsidian {
+  background-color: #050507;
+  background-image: 
+    radial-gradient(at 50% 0%, rgba(30, 41, 59, 0.3) 0px, transparent 70%),
+    radial-gradient(at 100% 100%, rgba(15, 23, 42, 0.4) 0px, transparent 70%);
+}
+
+.bg-mesh-cyber {
+  background-color: #0a0714;
+  background-image: 
+    radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.2) 0px, transparent 50%),
+    radial-gradient(at 90% 80%, rgba(244, 63, 94, 0.15) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(14, 165, 233, 0.12) 0px, transparent 60%);
+}
+
+.bg-mesh-minimal {
+  background-color: #0f1115;
+  background-image: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.03) 0%, transparent 60%);
+}
+
+.bg-mesh-light {
+  background-color: #f6f7fb;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(224, 231, 255, 0.8) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(254, 226, 226, 0.6) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(243, 244, 246, 0.9) 0px, transparent 70%);
+}
+
+/* Light Mode Overrides */
+.theme-light .glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 32px -10px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+}
+
+.theme-light .glass-pill {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  color: #1e293b;
+}
+
+.theme-light .glass-pill:hover {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+/* Zen Monolithic Transitions */
+.zen-black {
+  background-color: #000000 !important;
+  color: #e5e5e5 !important;
+}
+
+.zen-white {
+  background-color: #fafafa !important;
+  color: #171717 !important;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }

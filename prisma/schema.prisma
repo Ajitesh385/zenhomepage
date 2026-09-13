@@ -1,0 +1,40 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  title     String   @default("Untitled")
+  content   String   @default("")
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Shortcut {
+  id         String   @id @default(cuid())
+  title      String
+  url        String
+  icon       String   @default("globe")
+  orderIndex Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model UserSettings {
+  id             String   @id @default("default")
+  theme          String   @default("midnight") // midnight | obsidian | aurora | dusk | light
+  zenPreference  String   @default("black")    // black | white
+  searchEngine   String   @default("google")   // google | duckduckgo | perplexity | youtube | github
+  wallpaper      String   @default("aurora")   // aurora | gradient | abstract | clean | custom
+  customBgUrl    String   @default("")
+  showClock      Boolean  @default(true)
+  showShortcuts  Boolean  @default(true)
+  clockFormat    String   @default("24h")      // 12h | 24h
+  updatedAt      DateTime @updatedAt
+}
